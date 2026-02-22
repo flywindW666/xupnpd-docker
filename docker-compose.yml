@@ -1,0 +1,20 @@
+services:
+  xupnpd:
+    build:
+      context: .
+      dockerfile: Dockerfile.xupnpd
+    container_name: xupnpd
+    restart: unless-stopped
+    # 核心：必须使用 host 模式才能接收组播信号和被电视发现
+    network_mode: host
+    volumes:
+      - ./xupnpd_data/playlists:/app/playlists
+      - ./xupnpd_data/config:/app/config
+      - ./xupnpd_data/xupnpd.lua:/app/xupnpd.lua
+    environment:
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
