@@ -26,11 +26,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# 从编译阶段复制二进制文件
-COPY --from=builder /src/src/xupnpd-x86 /app/xupnpd
+# 从编译阶段复制二进制文件并改名为 xupnpd-bin
+COPY --from=builder /src/src/xupnpd-x86 /app/xupnpd-bin
 
-# 核心修正：xupnpd 默认在当前目录寻找脚本，我们必须把 src 目录下的所有 lua 脚本复制到 /app/
-# 根据 github 源码结构，xupnpd_main.lua 等脚本就在 src 目录下
+# 复制所有脚本和资源到 /app/ 目录
 COPY --from=builder /src/src/*.lua /app/
 COPY --from=builder /src/src/profiles /app/profiles
 COPY --from=builder /src/src/plugins /app/plugins
@@ -41,5 +40,8 @@ COPY --from=builder /src/src/playlists /app/playlists
 # 默认端口
 EXPOSE 4044
 
-# 启动
-CMD ["./xupnpd"]
+# 核心修正：由于 xupnpd.lua 已经由用户在宿主机通过 volume 挂载到 /app/xupnpd.lua，
+# 而 xupnpd 程序启动时需要指定配置文件。
+# 我们直接运行程序并指向挂载的配置文件。
+# 注意：程序搜索脚本的路径是基于执行时的当前目录。
+CMD ["./xupnpd-bin", "xupnpd"]
