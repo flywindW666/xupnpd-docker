@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /src
 RUN git clone https://github.com/clark15b/xupnpd.git .
 
-# 编译
+# 编译 (src 目录下有源码和 Makefile)
 WORKDIR /src/src
 RUN make
 
@@ -26,14 +26,17 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# 从编译阶段复制二进制文件和必要的脚本
+# 从编译阶段复制二进制文件
 COPY --from=builder /src/src/xupnpd-x86 /app/xupnpd
-COPY --from=builder /src/xupnpd.lua /app/
-COPY --from=builder /src/profiles /app/profiles
-COPY --from=builder /src/plugins /app/plugins
-COPY --from=builder /src/ui /app/ui
-COPY --from=builder /src/www /app/www
-COPY --from=builder /src/playlists /app/playlists
+
+# 复制脚本和插件 (这些在根目录和 src 目录都有，根据 master 分支结构)
+# 根据源码结构，主要的 lua 脚本和目录在 src 目录下
+COPY --from=builder /src/src/xupnpd.lua /app/
+COPY --from=builder /src/src/profiles /app/profiles
+COPY --from=builder /src/src/plugins /app/plugins
+COPY --from=builder /src/src/ui /app/ui
+COPY --from=builder /src/src/www /app/www
+COPY --from=builder /src/src/playlists /app/playlists
 
 # 默认端口
 EXPOSE 4044
