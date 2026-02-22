@@ -7,6 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  # 强制全小写镜像名
   IMAGE_NAME: flywindw666/xupnpd-docker
 
 jobs:
@@ -38,5 +39,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/xupnpd-docker:latest
+          # 使用 env.IMAGE_NAME 确保全小写
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
