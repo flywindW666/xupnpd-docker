@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: flywindw666/xupnpd-docker
 
 jobs:
   build-and-push:
@@ -38,5 +38,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/xupnpd-docker:latest
           labels: ${{ steps.meta.outputs.labels }}
