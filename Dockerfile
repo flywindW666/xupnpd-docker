@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /src
 RUN git clone https://github.com/clark15b/xupnpd.git .
 
-# 编译 (src 目录下有源码和 Makefile)
+# 编译
 WORKDIR /src/src
 RUN make
 
@@ -29,9 +29,9 @@ WORKDIR /app
 # 从编译阶段复制二进制文件
 COPY --from=builder /src/src/xupnpd-x86 /app/xupnpd
 
-# 复制脚本和插件 (这些在根目录和 src 目录都有，根据 master 分支结构)
-# 根据源码结构，主要的 lua 脚本和目录在 src 目录下
-COPY --from=builder /src/src/xupnpd.lua /app/
+# 核心修正：xupnpd 默认在当前目录寻找脚本，我们必须把 src 目录下的所有 lua 脚本复制到 /app/
+# 根据 github 源码结构，xupnpd_main.lua 等脚本就在 src 目录下
+COPY --from=builder /src/src/*.lua /app/
 COPY --from=builder /src/src/profiles /app/profiles
 COPY --from=builder /src/src/plugins /app/plugins
 COPY --from=builder /src/src/ui /app/ui
